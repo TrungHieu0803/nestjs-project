@@ -1,0 +1,105 @@
+import {} from '@nestjs/swagger'
+import {
+    validate,
+    validateOrReject,
+    Contains,
+    IsInt,
+    Length,
+    IsEmail,
+    IsFQDN,
+    IsDate,
+    IsBoolean,
+    IsNumber,
+    Min,
+    Max,
+    IsString
+  } from 'class-validator';
+import { UserEntity } from '../users.entity';
+import { ApiProperty } from '@nestjs/swagger';
+import { MESSAGES } from '@nestjs/core/constants';
+
+  export class UserDto implements Readonly<UserDto> {
+    
+    @IsNumber()
+    id: number;
+
+    @ApiProperty({type: String,description:'username'})
+    @IsString()
+    @Length(1,50)
+    userName : string
+
+    @ApiProperty({type: String,description:'password'})
+    @IsString()
+    password : string
+
+    @ApiProperty({type: String,description:'email'})
+    @IsEmail()
+    email : string
+
+    @ApiProperty({type: String,description:'fullname'})
+    @IsString()
+    fullName : string
+
+    @IsInt()
+    @Min(0)
+    @Max(5)
+    accountStatus : number
+
+    @IsString()
+    verificationCode : string
+
+    @ApiProperty({type: Boolean,description:'gender'})
+    @IsBoolean()
+    gender : boolean
+
+    @IsString()
+    address : string
+
+    @IsString()
+    phone : string
+    
+
+    public static from(dto : Partial<UserDto>){
+      
+        const result = new UserDto();
+        result.id = dto.id;
+        result.userName = dto.userName;
+        result.password = dto.password;
+        result.email = dto.email;
+        result.fullName = dto.fullName;
+        result.accountStatus = dto.accountStatus;
+        result.verificationCode = dto.verificationCode;
+        result.gender = dto.gender;
+        result.address = dto.address;
+        result.phone = dto.phone
+        return result;
+    }
+    public static fromEntity(entity : UserEntity){
+        return this.from({
+            id: entity.id,
+            userName:entity.userName,
+            password:entity.password,
+            email:entity.email,
+            fullName:entity.fullName,
+            accountStatus:entity.accountStatus,
+            verificationCode:entity.verificationCode,
+            gender:entity.gender,
+            address:entity.address,
+            phone:entity.phone
+        })
+    }
+    public static toEntity(dto : Partial<UserDto>){
+        const result = new UserEntity();
+        result.id = dto.id;
+        result.userName = dto.userName;
+        result.password = dto.password;
+        result.email = dto.email;
+        result.fullName = dto.fullName;
+        result.accountStatus = dto.accountStatus;
+        result.verificationCode = dto.verificationCode;
+        result.gender = dto.gender;
+        result.address = dto.address;
+        result.phone = dto.phone
+        return result;
+    }
+  }
