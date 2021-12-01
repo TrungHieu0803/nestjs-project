@@ -14,9 +14,6 @@ export class UserEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({type:"varchar",length:50,nullable:true})
-    userName : string
-
     @Column({type:"varchar",nullable:true})
     password : string
 
@@ -25,6 +22,9 @@ export class UserEntity {
 
     @Column({type:"varchar",nullable:true})
     fullName : string
+
+    @Column({type:'date',nullable:true})
+    dob : Date
 
     @Column({type:"int",nullable:true})
     accountStatus : number

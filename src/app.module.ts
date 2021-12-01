@@ -10,6 +10,7 @@ import { ConversationReplyModule } from './modules/conversation-reply/conversati
 import { PostsModule } from './modules/posts/posts.module';
 import { PostCommentsModule } from './modules/post-comments/post-comments.module';
 import { PostLikeModule } from './modules/post-like/post-like.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 
 @Module({
@@ -32,6 +33,7 @@ import { PostLikeModule } from './modules/post-like/post-like.module';
     PostsModule,
     PostCommentsModule,
     PostLikeModule,
+    AuthModule,
     
   ],
   controllers: [
