@@ -1,13 +1,7 @@
 import {} from '@nestjs/swagger'
 import {
-    validate,
-    validateOrReject,
-    Contains,
     IsInt,
-    Length,
     IsEmail,
-    IsFQDN,
-    IsDate,
     IsBoolean,
     IsNumber,
     Min,
@@ -16,17 +10,11 @@ import {
   } from 'class-validator';
 import { UserEntity } from '../users.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { MESSAGES } from '@nestjs/core/constants';
 
   export class UserDto implements Readonly<UserDto> {
     
     @IsNumber()
     id: number;
-
-    @ApiProperty({type: String,description:'username'})
-    @IsString()
-    @Length(1,50)
-    userName : string
 
     @ApiProperty({type: String,description:'password'})
     @IsString()
@@ -57,13 +45,14 @@ import { MESSAGES } from '@nestjs/core/constants';
 
     @IsString()
     phone : string
+
+    refreshToken : string
     
 
     public static from(dto : Partial<UserDto>){
       
         const result = new UserDto();
         result.id = dto.id;
-        result.userName = dto.userName;
         result.password = dto.password;
         result.email = dto.email;
         result.fullName = dto.fullName;
@@ -72,12 +61,12 @@ import { MESSAGES } from '@nestjs/core/constants';
         result.gender = dto.gender;
         result.address = dto.address;
         result.phone = dto.phone
+        result.refreshToken = dto.refreshToken
         return result;
     }
     public static fromEntity(entity : UserEntity){
         return this.from({
-            id: entity.id,
-            userName:entity.userName,
+            id: entity.id,           
             password:entity.password,
             email:entity.email,
             fullName:entity.fullName,
@@ -85,13 +74,13 @@ import { MESSAGES } from '@nestjs/core/constants';
             verificationCode:entity.verificationCode,
             gender:entity.gender,
             address:entity.address,
-            phone:entity.phone
+            phone:entity.phone,
+            refreshToken:entity.refreshToken
         })
     }
     public static toEntity(dto : Partial<UserDto>){
         const result = new UserEntity();
-        result.id = dto.id;
-        result.userName = dto.userName;
+        result.id = dto.id;       
         result.password = dto.password;
         result.email = dto.email;
         result.fullName = dto.fullName;
@@ -100,6 +89,7 @@ import { MESSAGES } from '@nestjs/core/constants';
         result.gender = dto.gender;
         result.address = dto.address;
         result.phone = dto.phone
+        result.refreshToken = dto.refreshToken
         return result;
     }
   }
