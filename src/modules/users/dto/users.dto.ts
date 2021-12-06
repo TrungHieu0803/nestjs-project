@@ -1,13 +1,7 @@
 import {} from '@nestjs/swagger'
 import {
-    validate,
-    validateOrReject,
-    Contains,
     IsInt,
-    Length,
     IsEmail,
-    IsFQDN,
-    IsDate,
     IsBoolean,
     IsNumber,
     Min,
@@ -16,7 +10,6 @@ import {
   } from 'class-validator';
 import { UserEntity } from '../users.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { MESSAGES } from '@nestjs/core/constants';
 
   export class UserDto implements Readonly<UserDto> {
     
@@ -52,6 +45,8 @@ import { MESSAGES } from '@nestjs/core/constants';
 
     @IsString()
     phone : string
+
+    refreshToken : string
     
 
     public static from(dto : Partial<UserDto>){
@@ -66,6 +61,7 @@ import { MESSAGES } from '@nestjs/core/constants';
         result.gender = dto.gender;
         result.address = dto.address;
         result.phone = dto.phone
+        result.refreshToken = dto.refreshToken
         return result;
     }
     public static fromEntity(entity : UserEntity){
@@ -78,7 +74,8 @@ import { MESSAGES } from '@nestjs/core/constants';
             verificationCode:entity.verificationCode,
             gender:entity.gender,
             address:entity.address,
-            phone:entity.phone
+            phone:entity.phone,
+            refreshToken:entity.refreshToken
         })
     }
     public static toEntity(dto : Partial<UserDto>){
@@ -92,6 +89,7 @@ import { MESSAGES } from '@nestjs/core/constants';
         result.gender = dto.gender;
         result.address = dto.address;
         result.phone = dto.phone
+        result.refreshToken = dto.refreshToken
         return result;
     }
   }

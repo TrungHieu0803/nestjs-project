@@ -1,8 +1,5 @@
-import { type } from "os";
-import { text } from "stream/consumers";
 import { Column, Entity, PrimaryGeneratedColumn ,OneToMany} from "typeorm";
 import { NotificationsEntity } from "src/modules/notifications/notifications.entity";
-import { NextNotification } from "rxjs";
 import { PhotosEntity } from "src/modules/photos/photos.entity";
 import { ConversationsEntity } from "src/modules/conversations/conversations.entity";
 import { ConversationReplyEntity } from "src/modules/conversation-reply/conversation-reply.entity";
@@ -40,6 +37,9 @@ export class UserEntity {
 
     @Column({type:"varchar",length:12,nullable:true})
     phone : string
+
+    @Column({name:"refresh_token",type:"varchar",nullable:true})
+    refreshToken : string
 
     
 

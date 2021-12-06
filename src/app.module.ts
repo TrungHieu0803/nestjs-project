@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,6 +11,7 @@ import { PostsModule } from './modules/posts/posts.module';
 import { PostCommentsModule } from './modules/post-comments/post-comments.module';
 import { PostLikeModule } from './modules/post-like/post-like.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { LoggerMiddleware } from './middleware/logger.middleware';
 
 
 @Module({
@@ -34,11 +35,17 @@ import { AuthModule } from './modules/auth/auth.module';
     PostCommentsModule,
     PostLikeModule,
     AuthModule,
-    
+    CacheModule.register({isGlobal:true})
   ],
   controllers: [
     AppController
   ],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('users');
+  }
+}

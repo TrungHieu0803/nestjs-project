@@ -1,17 +1,7 @@
 import {} from '@nestjs/swagger'
 import {
-    validate,
-    validateOrReject,
-    Contains,
-    IsInt,
-    Length,
     IsEmail,
-    IsFQDN,
-    IsDate,
     IsBoolean,
-    IsNumber,
-    Min,
-    Max,
     IsString
   } from 'class-validator';
 import { UserEntity } from '../../users/users.entity';

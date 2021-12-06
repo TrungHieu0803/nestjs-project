@@ -13,13 +13,11 @@ export class UsersService {
     ){}
 
     async findOne(id:number): Promise<UserDto>{
-        console.log(await this.usersRepository.findOne(2))
         const result = UserDto.fromEntity(await this.usersRepository.findOne(id))
         return result
     }
 
     async findByEmail(email:string): Promise<UserDto | undefined>{
-        console.log(await this.usersRepository.findOne({where:{"email":email}}))
         const result = await this.usersRepository.findOne({where:{"email":email}})
         return result ? UserDto.fromEntity(result) : null
     }
@@ -40,6 +38,9 @@ export class UsersService {
     async updateUser(user : UserDto) : Promise<UpdateResult>{
         return await this.usersRepository.update(user.id,UserDto.toEntity(user))
     }
-    
+    async updateRefreshToken(user : UserDto, refreshToken : string) : Promise<UpdateResult>{
+        return await this.usersRepository.createQueryBuilder().update().set({refreshToken: refreshToken}).where("id = :id", { id: user.id }).execute()
+    }
+
 
 }
