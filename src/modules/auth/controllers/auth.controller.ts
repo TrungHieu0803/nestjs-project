@@ -1,12 +1,18 @@
 import {
   Body,
   Controller,
+  Get,
+  HttpStatus,
   Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { LoginDto } from '../dto/user-login.dto';
 import { ApiResponse } from '@nestjs/swagger';
 import { RefreshToken } from '../dto/refresh-token.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 
 
 @Controller('auth')
@@ -29,5 +35,19 @@ export class AuthController {
   @ApiResponse({ status: 403})
   refreshToken(@Body()refreshTokenFromClient : RefreshToken){
     return this.authService.verifyRefreshToken(refreshTokenFromClient.refreshToken)
+  }
+  @Get("/facebook")
+  @UseGuards(AuthGuard("facebook"))
+  async facebookLogin(): Promise<any> {
+    return HttpStatus.OK;
+  }
+
+  @Get('/facebook/redirect')
+  @UseGuards(AuthGuard('facebook'))
+  async facebookLoginRedirect(@Req() req: Request): Promise<any> {
+    return {
+      statusCode: HttpStatus.OK,
+      payload: req.user,
+    };
   }
 }
