@@ -10,12 +10,14 @@ import { UsersService } from 'src/modules/users/users.service';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { UserDto } from 'src/modules/users/dto/users.dto';
 import { LoginDto } from '../dto/user-login.dto';
-import { environments } from 'src/enviroments/enviroments';
+import { config } from 'dotenv';
 import { Cache } from 'cache-manager'
 export interface Token {
     id: number;
     email: string;
 }
+
+config();
 @Injectable()
 export class AuthService {
     constructor(
@@ -34,8 +36,8 @@ export class AuthService {
         }
 
         //generate access token
-        const accessToken = this.generateToken(user, environments.accessTokenSecret, environments.accessTokenExpiration)
-        const refreshToken = this.generateToken(user, environments.refreshTokenSecret, environments.refreshTokenExpiration)
+        const accessToken = this.generateToken(user, process.env.ACCESS_TOKEN_SECRET, process.env.ACCESS_TOKEN_EXPIRATION)
+        const refreshToken = this.generateToken(user, process.env.REFRESH_TOKEN_SECRET, process.env.REFRESH_TOKEN_EXPIRATION)
         await this.cacheManager.set("refreshToken", refreshToken, { ttl: 1000 })
         return { accessToken, refreshToken }
     }
@@ -57,9 +59,9 @@ export class AuthService {
 
     async verifyToken(token: string) {
         const options: JwtSignOptions = {
-            secret: environments.accessTokenSecret
+            secret: process.env.ACCESS_TOKEN_SECRET
         }
-        options.expiresIn = environments.accessTokenExpiration
+        options.expiresIn = process.env.ACCESS_TOKEN_EXPIRATION
         let decoded = this.jwtService.decode(token) as Token
         if (!decoded) {
             return {
@@ -82,14 +84,14 @@ export class AuthService {
     }
     async verifyRefreshToken(refreshTokenFromClient: string) {
         const options: JwtSignOptions = {
-            secret: environments.refreshTokenSecret
+            secret: process.env.REFRESH_TOKEN_SECRET
         }
-        options.expiresIn = environments.refreshTokenExpiration
+        options.expiresIn = process.env.REFRESH_TOKEN_EXPIRATION
         try {
             this.jwtService.verify<Token>(refreshTokenFromClient, options)
             const refreshToken = await this.cacheManager.get("refreshToken") as string
             const { id, email } = this.jwtService.decode(refreshToken) as Token
-            return  {accessToken : this.generateToken({ id, email }, environments.accessTokenSecret, environments.accessTokenExpiration)}
+            return  {accessToken : this.generateToken({ id, email }, process.env.ACCESS_TOKEN_SECRET, process.env.ACCESS_TOKEN_EXPIRATION)}
         } catch (e) {
             await this.cacheManager.del('refreshToken')
             throw new ForbiddenException('Refresh token timeout')
