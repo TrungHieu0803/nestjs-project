@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     CACHE_MANAGER,
     ForbiddenException,
     forwardRef,
@@ -12,6 +13,7 @@ import { UserDto } from 'src/modules/users/dto/users.dto';
 import { LoginDto } from '../dto/user-login.dto';
 import { config } from 'dotenv';
 import { Cache } from 'cache-manager'
+import * as bcrypt from 'bcrypt';
 export interface Token {
     id: number;
     email: string;
@@ -26,19 +28,16 @@ export class AuthService {
         @Inject(CACHE_MANAGER) private cacheManager: Cache
     ) { }
 
-    async validate(userLogin: LoginDto): Promise<any> {
+    async login(userLogin: LoginDto): Promise<any> {
         const user = await this.userService.findByEmail(userLogin.email);
-        if (!user) {
-            throw new UnauthorizedException('User does not exist')
+        if (!user || !await bcrypt.compare(userLogin.password, user.password)  || !user.isEnable) {
+            throw new UnauthorizedException('Email or password is incorrect!!')
         }
-        if (userLogin.password !== user.password) {
-            throw new UnauthorizedException('Incorrect password')
-        }
-
+        
         //generate access token
         const accessToken = this.generateToken(user, process.env.ACCESS_TOKEN_SECRET, process.env.ACCESS_TOKEN_EXPIRATION)
         const refreshToken = this.generateToken(user, process.env.REFRESH_TOKEN_SECRET, process.env.REFRESH_TOKEN_EXPIRATION)
-        await this.cacheManager.set("refreshToken", refreshToken, { ttl: 1000 })
+        await this.cacheManager.set(user.email, refreshToken, { ttl: 1000 })
         return { accessToken, refreshToken }
     }
 
@@ -82,20 +81,35 @@ export class AuthService {
             }
         }
     }
-    async verifyRefreshToken(refreshTokenFromClient: string) {
-        const options: JwtSignOptions = {
-            secret: process.env.REFRESH_TOKEN_SECRET
+
+    async verifyRefreshToken(refreshTokenFromClient: string) {    
+        const { email } = this.jwtService.decode(refreshTokenFromClient) as Token
+        const refreshToken = await this.cacheManager.get(email) as string
+        if (refreshToken && refreshToken.localeCompare(refreshTokenFromClient) == 0) {
+            try {
+                const options: JwtSignOptions = {
+                    secret: process.env.REFRESH_TOKEN_SECRET
+                }
+                options.expiresIn = process.env.REFRESH_TOKEN_EXPIRATION
+                this.jwtService.verify<Token>(refreshTokenFromClient, options)
+                const { id, email } = this.jwtService.decode(refreshToken) as Token
+                return { accessToken: this.generateToken({ id, email }, process.env.ACCESS_TOKEN_SECRET, process.env.ACCESS_TOKEN_EXPIRATION) }
+            } catch (e) {
+                await this.cacheManager.del(email)
+                throw new ForbiddenException('Refresh token timeout')
+            }
+        }else{
+            throw new UnauthorizedException('Refresh token does not exist')
         }
-        options.expiresIn = process.env.REFRESH_TOKEN_EXPIRATION
-        try {
-            this.jwtService.verify<Token>(refreshTokenFromClient, options)
-            const refreshToken = await this.cacheManager.get("refreshToken") as string
-            const { id, email } = this.jwtService.decode(refreshToken) as Token
-            return  {accessToken : this.generateToken({ id, email }, process.env.ACCESS_TOKEN_SECRET, process.env.ACCESS_TOKEN_EXPIRATION)}
-        } catch (e) {
-            await this.cacheManager.del('refreshToken')
-            throw new ForbiddenException('Refresh token timeout')
+    }
+
+    async verifyEmail(verificationCode : string,email : string){
+        const user = await this.userService.findByEmail(email)
+        if(!user || !user.verificationCode ||user.verificationCode.localeCompare(verificationCode)!=0){
+            throw new BadRequestException('Parameter is invalid')
         }
+        this.userService.updateIsEnable(email,true)
+        return {message : 'Verification successful'}
     }
 
 

@@ -38,8 +38,8 @@ export class UserEntity {
     @Column({type:"varchar",length:12,nullable:true})
     phone : string
 
-    @Column({name:"refresh_token",type:"varchar",nullable:true})
-    refreshToken : string
+    @Column({name:"is_enable",nullable:false})
+    isEnable :boolean
 
     
 

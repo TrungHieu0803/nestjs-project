@@ -12,6 +12,7 @@ import { PostCommentsModule } from './modules/post-comments/post-comments.module
 import { PostLikeModule } from './modules/post-like/post-like.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
+import { MailModule } from './modules/mail/mail.module';
 
 
 @Module({
@@ -35,7 +36,8 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
     PostCommentsModule,
     PostLikeModule,
     AuthModule,
-    CacheModule.register({isGlobal:true})
+    CacheModule.register({isGlobal:true}),
+    MailModule,
   ],
   controllers: [
     AppController

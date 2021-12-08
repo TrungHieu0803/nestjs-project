@@ -25,15 +25,6 @@ export class UsersController {
         return this.userService.findAll()
     }
 
-    @Post()
-    @ApiResponse({ status: 201, description: 'Successful Registration' })
-    @ApiResponse({ status: 400, description: 'Bad Request' })
-    @ApiResponse({ status: 401, description: 'Unauthorized' })
-    @ApiBody({type: UserRegisterDto})
-    addUser(@Body() user : UserRegisterDto) : Promise<UserRegisterDto>{
-        return this.userService.addUser(user)
-    }
-
     @Put()
     @ApiResponse({ status: 201, description: 'Successful update' })
     @ApiResponse({ status: 400, description: 'Bad Request' })

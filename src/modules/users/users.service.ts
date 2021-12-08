@@ -1,15 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, UpdateResult } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { UserEntity } from './users.entity';
 import { UserDto } from './dto/users.dto';
 import { UserRegisterDto } from '../auth/dto/user-register.dto';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class UsersService {
     constructor(
-        @InjectRepository(UserEntity)
-        private usersRepository : Repository<UserEntity>      
+        @InjectRepository(UserEntity) private usersRepository : Repository<UserEntity>,
+        @Inject(forwardRef(() => MailService)) private mailService: MailService      
     ){}
 
     async findOne(id:number): Promise<UserDto>{
@@ -30,17 +32,27 @@ export class UsersService {
         return result
     }
 
-    async addUser(user :UserRegisterDto) : Promise<UserRegisterDto>{
-        const userEntity = UserRegisterDto.toEntity(user)        
+    async addUser(user :UserRegisterDto): Promise<any> {
+        if(await this.findByEmail(user.email)){
+            throw new ConflictException('This email address is already being used')
+        }
+        const userEntity = UserRegisterDto.toEntity(user)
+        const verificationCode  = Math.floor(Math.random() * 10000) 
+        userEntity.password = await bcrypt.hash(user.password,10)  
+        userEntity.isEnable = false 
+        userEntity.verificationCode = verificationCode.toString()    
         Object.keys(userEntity).forEach(key => userEntity[key] === undefined ? delete userEntity[key] : {});
-        return await this.usersRepository.save(userEntity)
+        await this.usersRepository.save(userEntity)
+        return this.mailService.verifyEmail(userEntity.email,verificationCode)
     }
+
     async updateUser(user : UserDto) : Promise<UpdateResult>{
         return await this.usersRepository.update(user.id,UserDto.toEntity(user))
     }
-    async updateRefreshToken(user : UserDto, refreshToken : string) : Promise<UpdateResult>{
-        return await this.usersRepository.createQueryBuilder().update().set({refreshToken: refreshToken}).where("id = :id", { id: user.id }).execute()
-    }
 
+    async updateIsEnable(email : string,isEnable : boolean) : Promise<UpdateResult>{
+        return await this.usersRepository.createQueryBuilder().update().set({isEnable :isEnable,verificationCode:''})
+                    .where("email=:email",{email:email}).execute()
+    }
 
 }
