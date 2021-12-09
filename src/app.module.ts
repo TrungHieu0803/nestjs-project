@@ -48,6 +48,6 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(LoggerMiddleware)
-      .forRoutes('users');
+      .forRoutes('photos','users');
   }
 }

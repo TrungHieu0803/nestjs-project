@@ -62,6 +62,7 @@ import { ApiProperty } from '@nestjs/swagger';
         result.gender = dto.gender;
         result.address = dto.address;
         result.phone = dto.phone
+        result.isEnable = dto.isEnable
         return result;
     }
     public static fromEntity(entity : UserEntity){
@@ -75,6 +76,7 @@ import { ApiProperty } from '@nestjs/swagger';
             gender:entity.gender,
             address:entity.address,
             phone:entity.phone,
+            isEnable:entity.isEnable
         })
     }
     public static toEntity(dto : Partial<UserDto>){

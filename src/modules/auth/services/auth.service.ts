@@ -30,7 +30,7 @@ export class AuthService {
 
     async login(userLogin: LoginDto): Promise<any> {
         const user = await this.userService.findByEmail(userLogin.email);
-        if (!user || !await bcrypt.compare(userLogin.password, user.password)  || !user.isEnable) {
+        if (!user || !await bcrypt.compare(userLogin.password, user.password) || !user.isEnable  ) {
             throw new UnauthorizedException('Email or password is incorrect!!')
         }
         
