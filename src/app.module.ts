@@ -1,4 +1,4 @@
-import { CacheModule, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { CacheModule, MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -36,7 +36,7 @@ import { MailModule } from './modules/mail/mail.module';
     PostCommentsModule,
     PostLikeModule,
     AuthModule,
-    CacheModule.register({isGlobal:true}),
+    CacheModule.register({ isGlobal: true }),
     MailModule,
   ],
   controllers: [
@@ -48,6 +48,9 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(LoggerMiddleware)
+      .exclude({ path: 'users/reset-password', method: RequestMethod.GET },
+               { path: 'users/reset-password', method: RequestMethod.PUT },
+               'users/(.*)')
       .forRoutes('photos','users');
   }
 }

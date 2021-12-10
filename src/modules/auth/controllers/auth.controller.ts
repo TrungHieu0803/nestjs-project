@@ -60,6 +60,7 @@ export class AuthController {
   @Post('users/register')
   @ApiResponse({ status: 201, description: 'Registration Successful' })
   @ApiResponse({ status: 409, description: 'Conflict',schema:{example:{"statusCode": 409,"message": "This email address is already being used","error": "Conflict"}} })
+  @ApiResponse({status:500,schema:{example:{status:500,message:'Can not send email',error:'Internal server'}}})
   @ApiBody({ type: UserRegisterDto })
   addUser(@Body() user: UserRegisterDto): Promise<UserRegisterDto> {
     return this.userService.addUser(user)
