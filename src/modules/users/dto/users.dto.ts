@@ -46,7 +46,8 @@ import { ApiProperty } from '@nestjs/swagger';
     @IsString()
     phone : string
 
-    refreshToken : string
+    @IsBoolean()
+    isEnable :boolean
     
 
     public static from(dto : Partial<UserDto>){
@@ -61,7 +62,7 @@ import { ApiProperty } from '@nestjs/swagger';
         result.gender = dto.gender;
         result.address = dto.address;
         result.phone = dto.phone
-        result.refreshToken = dto.refreshToken
+        result.isEnable = dto.isEnable
         return result;
     }
     public static fromEntity(entity : UserEntity){
@@ -75,7 +76,7 @@ import { ApiProperty } from '@nestjs/swagger';
             gender:entity.gender,
             address:entity.address,
             phone:entity.phone,
-            refreshToken:entity.refreshToken
+            isEnable:entity.isEnable
         })
     }
     public static toEntity(dto : Partial<UserDto>){
@@ -89,7 +90,6 @@ import { ApiProperty } from '@nestjs/swagger';
         result.gender = dto.gender;
         result.address = dto.address;
         result.phone = dto.phone
-        result.refreshToken = dto.refreshToken
         return result;
     }
   }

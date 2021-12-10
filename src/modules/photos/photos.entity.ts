@@ -6,8 +6,8 @@ export class PhotosEntity {
     @PrimaryGeneratedColumn()
     id : number
 
-    @Column("nvarchar")
-    photo:string
+    @Column({name:'photo_name',type:'varchar'})
+    photoName:string
 
     @ManyToOne(type=>UserEntity,user=>user.photos)
     user:UserEntity
