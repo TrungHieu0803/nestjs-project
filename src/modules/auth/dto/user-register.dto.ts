@@ -9,13 +9,13 @@ import { ApiProperty } from '@nestjs/swagger';
 
   export class UserRegisterDto implements Readonly<UserRegisterDto> {
 
-    @ApiProperty({type: String,description:'password'})
-    @IsString()
-    password : string
-
     @ApiProperty({type: String,description:'email'})
     @IsEmail()
     email : string
+
+    @ApiProperty({type: String,description:'password'})
+    @IsString()
+    password : string
 
     @ApiProperty({type: String,description:'full name'})
     @IsString()
