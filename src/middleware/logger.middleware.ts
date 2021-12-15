@@ -10,11 +10,12 @@ export class LoggerMiddleware implements NestMiddleware {
     async use(req: Request, res: Response, next: NextFunction) {
         if (req.headers.authorization) {
             const tokenFromClient = req.headers.authorization.split(' ')[1] 
-            var {isValid,mess} = await this.authService.verifyToken(tokenFromClient)
+            var {isValid, mess, id, email} = await this.authService.verifyToken(tokenFromClient)
             if(!isValid){
                 return  res.status(401).json({message: mess}) 
             }
-   
+            req.headers.email = email
+            req.headers.id = id.toString()
             
         }else{
             return res.status(401).json({

@@ -13,6 +13,7 @@ import { PostLikeModule } from './modules/post-like/post-like.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 import { MailModule } from './modules/mail/mail.module';
+import { FollowingRelationshipsModule } from './modules/following-relationships/following-relationships.module';
 
 
 @Module({
@@ -38,6 +39,7 @@ import { MailModule } from './modules/mail/mail.module';
     AuthModule,
     CacheModule.register({ isGlobal: true }),
     MailModule,
+    FollowingRelationshipsModule,
   ],
   controllers: [
     AppController
@@ -51,6 +53,6 @@ export class AppModule implements NestModule {
       .exclude({ path: 'users/reset-password', method: RequestMethod.GET },
                { path: 'users/reset-password', method: RequestMethod.PUT },
                'users/(.*)')
-      .forRoutes('photos','users');
+      .forRoutes('photos','users','following-relationships');
   }
 }

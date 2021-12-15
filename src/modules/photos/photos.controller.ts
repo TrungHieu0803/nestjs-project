@@ -1,4 +1,4 @@
-import { Controller, Post, UploadedFile, UseInterceptors ,Request, HttpStatus} from '@nestjs/common';
+import { Controller, Post, UploadedFile, UseInterceptors ,Request} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiBody, ApiBearerAuth, ApiResponse, ApiOkResponse } from '@nestjs/swagger';
 import { PhotosService } from './photos.service';
@@ -27,6 +27,6 @@ export class PhotosController {
     })
     @UseInterceptors(FileInterceptor('file'))
     uploadPhoto(@UploadedFile('file') file, @Request() req) {    
-        return this.photoService.uploadPhoto(file,req.headers.authorization.split(' ')[1])
+        return this.photoService.uploadPhoto(file,parseInt(req.headers.id));
     }
 }

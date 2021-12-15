@@ -14,6 +14,7 @@ import { LoginDto } from '../dto/user-login.dto';
 import { config } from 'dotenv';
 import { Cache } from 'cache-manager'
 import * as bcrypt from 'bcrypt';
+import { Response} from 'express';
 export interface Token {
     id: number;
     email: string;
@@ -28,17 +29,21 @@ export class AuthService {
         @Inject(CACHE_MANAGER) private cacheManager: Cache
     ) { }
 
-    async login(userLogin: LoginDto): Promise<any> {
+    async login(userLogin: LoginDto, res: Response): Promise<any> {
         const user = await this.userService.findByEmail(userLogin.email);
         if (!user || !await bcrypt.compare(userLogin.password, user.password) || !user.isEnable  ) {
             throw new UnauthorizedException('Email or password is incorrect!!')
-        }
-        
+        }    
         //generate access token
         const accessToken = this.generateToken(user, process.env.ACCESS_TOKEN_SECRET, process.env.ACCESS_TOKEN_EXPIRATION)
         const refreshToken = this.generateToken(user, process.env.REFRESH_TOKEN_SECRET, process.env.REFRESH_TOKEN_EXPIRATION)
         await this.cacheManager.set(user.email, refreshToken, { ttl: 1000 })
-        return { accessToken, refreshToken }
+        res.setHeader("access_token", accessToken);
+        res.setHeader("refresh_token", refreshToken);
+        return res.json({
+            success: true,
+            message: 'Login success'
+        })
     }
 
     generateToken(user: UserDto | { id: number, email: string }, secretSignature: string, tokenLife: string) {
@@ -65,19 +70,23 @@ export class AuthService {
         if (!decoded) {
             return {
                 isValid: false,
-                mess: "Invalid token"
+                mess: "Invalid token",
+                id: -1,
+                email: ''
             }
         }
         try {
             this.jwtService.verify<Token>(token, options)
             return {
                 isValid: true,
-                mess: "Valid token"
+                mess: "Valid token",
+                ...decoded
             }
         } catch (e) {
             return {
                 isValid: false,
-                mess: "Access token timeout"
+                mess: "Access token timeout",
+                ...decoded
             }
         }
     }

@@ -67,16 +67,14 @@ export class UsersService {
         return await this.mailService.resetPasswordEmail(email, securityCode)
     }
 
-    async resetPassword(info: ResetPasswordDto): Promise<UpdateResult> {       
-        console.log(await this.cacheManager.get('sCode'+info.email) as string)
-        const securityCode = await this.cacheManager.get('sCode'+info.email) as string | ''
+    async resetPassword(info: ResetPasswordDto): Promise<UpdateResult> {
+        const securityCode = await this.cacheManager.get('sCode'+info.email) as string || ''
         if(info.securityCode.localeCompare(securityCode)!=0){
             throw new BadRequestException('Security code is incorrect')
         }
         const encodePass = await bcrypt.hash(info.newPassword, 10)
         return this.usersRepository.createQueryBuilder().update().set({ password: encodePass })
             .where("email=:email", { email: info.email }).execute()
-        
     }
 
 }
