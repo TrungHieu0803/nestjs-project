@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Put, Request } from '@nestjs/common';
 import { UserDto } from './dto/users.dto';
 import { UsersService } from './users.service';
 import { ApiBearerAuth, ApiOkResponse, ApiResponse } from '@nestjs/swagger'
@@ -19,7 +19,8 @@ export class UsersController {
     @ApiResponse({ status: 400, description: 'Bad Request', type: null })
     @ApiResponse({ status: 401, description: 'Unauthorized' })
     @ApiBearerAuth()
-    findAll(): Promise<UserDto[]> {
+    findAll(@Body() {userInfo}: any): Promise<UserDto[]> {
+        console.log(userInfo)
         return this.userService.findAll()
     }
 
@@ -35,7 +36,7 @@ export class UsersController {
     @ApiOkResponse({schema:{example:{message:'Check email'}}})
     @ApiResponse({status:400,description:'Resource not found',schema:{example:{status:400,message:'The email is not registered',error:'Not found'}}})
     @ApiResponse({status:500,schema:{example:{status:500,message:'Can not send email',error:'Internal server'}}})
-    sendSecurityCode(@Param('email')email :string) : Promise<any>{
+    sendSecurityCode(@Param('email') email :string) : Promise<any>{
         return this.userService.sendSecurityCode(email)
     }
     

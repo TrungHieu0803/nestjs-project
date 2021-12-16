@@ -7,9 +7,8 @@ import { PhotosEntity } from './photos.entity';
 import { PhotosService } from './photos.service';
 
 @Module({
-  imports:[JwtModule.register(null),UsersModule,TypeOrmModule.forFeature([PhotosEntity])],
+  imports:[UsersModule,TypeOrmModule.forFeature([PhotosEntity])],
   controllers: [PhotosController],
   providers: [PhotosService],
-  exports:[JwtModule]
 })
 export class PhotosModule {}

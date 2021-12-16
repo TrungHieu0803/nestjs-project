@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
@@ -15,7 +16,7 @@ import { LoginDto } from '../dto/user-login.dto';
 import { ApiBody, ApiProperty, ApiResponse } from '@nestjs/swagger';
 import { RefreshToken } from '../dto/refresh-token.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { UserRegisterDto } from '../dto/user-register.dto';
 import { UsersService } from 'src/modules/users/users.service';
 
@@ -31,8 +32,8 @@ export class AuthController {
   @Post('login')
   @ApiResponse({ status: 201, description: 'Login successful', schema: { example: { "refresh token": "string", "access token": "string" } } })
   @ApiResponse({ status: 401, description: 'Unauthorized', schema: { example: { "statusCode": 401,"message": "Email or password is incorrect!!","error": "Unauthorized" } } })
-  login(@Body() userLogin: LoginDto) {
-    return this.authService.login(userLogin)
+  login(@Body() userLogin: LoginDto, @Res() res: Response) {
+    return this.authService.login(userLogin, res)
   }
 
   @Post('refresh-token')

@@ -6,9 +6,10 @@ import { ConversationReplyEntity } from "src/modules/conversation-reply/conversa
 import { PostsEntity } from "src/modules/posts/posts.entity";
 import { PostLikeEntity } from "src/modules/post-like/post-like.entity";
 import { PostCommentsEntity } from "src/modules/post-comments/post-comments.entity";
+import { FollowingRelationshipsEntity } from "../following-relationships/following-relationships.entity";
 @Entity()
 export class UserEntity {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('increment')
     id: number;
 
     @Column({type:"varchar",nullable:true})
@@ -41,10 +42,14 @@ export class UserEntity {
     @Column({name:"is_enable",nullable:false})
     isEnable :boolean
 
-    
+    @Column({ type: "varchar", nullable: true})
+    avatar: string
 
-    @OneToMany(type=>NotificationsEntity,notifications=>notifications.user)
-    notifications:NotificationsEntity
+    @OneToMany(type => NotificationsEntity, notifications => notifications.toUser)
+    toUser: NotificationsEntity
+
+    @OneToMany(type => NotificationsEntity, notifications => notifications.fromUser)
+    fromUser: NotificationsEntity
 
     @OneToMany(type=>PhotosEntity,photo=>photo.user)
     photos : PhotosEntity
@@ -53,10 +58,10 @@ export class UserEntity {
     conversationsUser1 : ConversationsEntity
 
     @OneToMany(type=>ConversationsEntity,conversation=>conversation.user2)
-    conversationsUser2 : ConversationsEntity
+    conversationsUser2 : ConversationsEntity[]
 
     @OneToMany(type=>ConversationReplyEntity, conversationReply=>conversationReply.user)
-    conversationReply : ConversationReplyEntity
+    conversationReply : ConversationReplyEntity[]
 
     @OneToMany(type=>PostsEntity,post=>post.user)
     posts : PostsEntity
@@ -66,5 +71,11 @@ export class UserEntity {
 
     @OneToMany(type=>PostCommentsEntity,postComment => postComment.user)
     postComments : PostCommentsEntity
+
+    @OneToMany(type => FollowingRelationshipsEntity , follow => follow.followedUser)
+    followedUser : FollowingRelationshipsEntity
+
+    @OneToMany(type => FollowingRelationshipsEntity , following => following.follower)
+    follower : FollowingRelationshipsEntity
 
 }

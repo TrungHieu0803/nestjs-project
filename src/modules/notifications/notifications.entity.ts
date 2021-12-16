@@ -5,14 +5,20 @@ import { PrimaryGeneratedColumn, Column, Entity, ManyToOne } from "typeorm";
 @Entity()
 export class NotificationsEntity {
     @PrimaryGeneratedColumn()
-    id:number
+    id: number
 
-    @Column("nvarchar")
-    content:string
+    @Column({ type: 'nvarchar' })
+    content: string
 
-    @Column("nvarchar")
-    link:string
+    @Column({ name: 'created_date', type: "datetime" })
+    createdDate: Date
 
-    @ManyToOne(type=> UserEntity,user=>user.notifications)
-    user : UserEntity;
+    @Column({ name: 'is_read', type: 'boolean' })
+    isRead: boolean
+
+    @ManyToOne(type => UserEntity, user => user.toUser)
+    toUser: UserEntity;
+
+    @ManyToOne(type => UserEntity, user => user.fromUser)
+    fromUser: UserEntity;
 }
