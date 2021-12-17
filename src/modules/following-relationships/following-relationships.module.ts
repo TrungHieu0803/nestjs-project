@@ -7,8 +7,9 @@ import { FollowingRelationshipsEntity } from './following-relationships.entity';
 import { FollowingRelationshipsService } from './following-relationships.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([FollowingRelationshipsEntity]), UsersModule,NotificationsModule],
+  imports: [TypeOrmModule.forFeature([FollowingRelationshipsEntity]), UsersModule, NotificationsModule],
   controllers: [FollowingRelationshipsController],
-  providers: [FollowingRelationshipsService]
+  providers: [FollowingRelationshipsService],
+  exports: [FollowingRelationshipsService]
 })
 export class FollowingRelationshipsModule { }

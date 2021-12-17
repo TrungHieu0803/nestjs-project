@@ -14,6 +14,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 import { MailModule } from './modules/mail/mail.module';
 import { FollowingRelationshipsModule } from './modules/following-relationships/following-relationships.module';
+import { TagsModule } from './modules/tags/tags.module';
 
 
 @Module({
@@ -40,6 +41,7 @@ import { FollowingRelationshipsModule } from './modules/following-relationships/
     CacheModule.register({ isGlobal: true }),
     MailModule,
     FollowingRelationshipsModule,
+    TagsModule,
   ],
   controllers: [
     AppController
@@ -53,6 +55,6 @@ export class AppModule implements NestModule {
       .exclude({ path: 'users/reset-password', method: RequestMethod.GET },
                { path: 'users/reset-password', method: RequestMethod.PUT },
                'users/(.*)')
-      .forRoutes('photos','users','following-relationships');
+      .forRoutes( 'users', 'following-relationships', 'notifications','posts');
   }
 }

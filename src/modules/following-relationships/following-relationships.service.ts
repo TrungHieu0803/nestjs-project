@@ -2,6 +2,7 @@ import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErro
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NotificationsService } from '../notifications/notifications.service';
+import { UserEntity } from '../users/users.entity';
 import { UsersService } from '../users/users.service';
 import { FollowDto } from './dto/follow.dto';
 import { FollowingRelationshipsEntity } from './following-relationships.entity';
@@ -32,7 +33,7 @@ export class FollowingRelationshipsService {
             throw new InternalServerErrorException(error)
         }
         //create notification 
-        await this.notificationsService.addNotification(entity.follower,entity.followedUser);
+        await this.notificationsService.followNotification(entity.follower, entity.followedUser);
         return {
             status: 201,
             message: 'Followed user have id ' + followDto.followedUserId
@@ -50,5 +51,9 @@ export class FollowingRelationshipsService {
             status: 201,
             message: 'Unfollowed user have id ' + followDto.followedUserId
         }
+    }
+
+    async getFollowedUser(userId: number): Promise<FollowDto[]> {
+        return await this.repo.createQueryBuilder().select(['followedUserId']).where('followerId = :id', { id: userId }).execute();
     }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Post, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Request } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { FollowDto } from './dto/follow.dto';
 import { FollowingRelationshipsService } from './following-relationships.service';
@@ -25,6 +25,12 @@ export class FollowingRelationshipsController {
     @ApiResponse({ status: 500, schema: { example: { status: 500, message: 'error description', error: 'Internal server' } } })
     unfollow(@Body() followDto: FollowDto, @Request() req): Promise<any> {
         return this.followingRelationShipsService.unfollow(followDto, parseInt(req.headers.id));
+    }
+
+    @Get('get')
+    @ApiBearerAuth()
+    getf(@Request() req) {
+        return this.followingRelationShipsService.getFollowedUser(parseInt(req.headers.id));
     }
 
 }
