@@ -15,6 +15,8 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
 import { MailModule } from './modules/mail/mail.module';
 import { FollowingRelationshipsModule } from './modules/following-relationships/following-relationships.module';
 import { TagsModule } from './modules/tags/tags.module';
+import { AppGateway } from './gateway/app.gateway';
+import { GatewayModules } from './gateway/gateway.mofuels';
 
 
 @Module({
@@ -42,11 +44,12 @@ import { TagsModule } from './modules/tags/tags.module';
     MailModule,
     FollowingRelationshipsModule,
     TagsModule,
+    GatewayModules,
   ],
   controllers: [
     AppController
   ],
-  providers: [AppService],
+  providers: [AppService, AppGateway],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
