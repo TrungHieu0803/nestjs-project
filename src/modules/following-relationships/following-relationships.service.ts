@@ -1,5 +1,6 @@
-import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { NotFoundError } from 'rxjs';
 import { Repository } from 'typeorm';
 import { NotificationsService } from '../notifications/notifications.service';
 import { UserEntity } from '../users/users.entity';
@@ -54,6 +55,10 @@ export class FollowingRelationshipsService {
     }
 
     async getFollowedUser(userId: number): Promise<FollowDto[]> {
-        return await this.repo.createQueryBuilder().select(['followedUserId']).where('followerId = :id', { id: userId }).execute();
+        const result = await this.repo.createQueryBuilder().select(['followedUserId']).where('followerId = :id', { id: userId }).execute();
+        if(result.length == 0){
+            throw new NotFoundException('Do not follow anyone!');
+        }
+        return result;
     }
 }

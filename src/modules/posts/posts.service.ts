@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PhotosService } from '../photos/photos.service';
@@ -12,6 +12,7 @@ import {
     IPaginationOptions,
 } from 'nestjs-typeorm-paginate';
 import { FollowingRelationshipsService } from '../following-relationships/following-relationships.service';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class PostsService {
@@ -44,6 +45,14 @@ export class PostsService {
             .where('userId IN (:...ids)', { ids: listFollow })
             .andWhere('createdDate > :date', { date: get5DayBefore }).orderBy('createdDate', 'DESC');
         return paginate<PostsEntity>(result, options);
+    }
+
+    async findOne(postId: number): Promise<PostsEntity> {
+        const result = await this.findOne(postId);
+        if (!result) {
+            throw new NotFoundException('Post does not exist!')
+        }
+        return result;
     }
 
     getNDayBefore(n: number): Date {
