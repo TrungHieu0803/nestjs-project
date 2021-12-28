@@ -1,4 +1,4 @@
-import { ConflictException, forwardRef, Inject, Injectable, CACHE_MANAGER, BadRequestException, NotFoundException } from '@nestjs/common';
+import { ConflictException, forwardRef, Inject, Injectable, CACHE_MANAGER, BadRequestException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, UpdateResult } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -18,7 +18,11 @@ export class UsersService {
     ) { }
 
     async findOne(id: number): Promise<UserEntity> {
-        return await this.usersRepository.findOne(id)
+       const result = await this.usersRepository.findOne(id);
+       if(!result){
+           throw new NotFoundException('User does not exist!')
+       }
+       return result;
     }
 
     async findByEmail(email: string): Promise<UserDto | undefined> {

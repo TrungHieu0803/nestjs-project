@@ -3,4 +3,6 @@ export interface NotificationInterface {
     fromUserId: number;
     toUserId: number;
     postId: number | null;
+    comment: string | null;
+    replyForComment: number | null;
 }
